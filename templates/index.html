@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Attrition Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Attrition Predictor</h1>
+            <p>Simplified Prediction based on Top 5 Key Factors</p>
+        </div>
+
+        <form id="predictionForm">
+            <div class="form-grid">
+                <!-- 1. Age -->
+                <div class="form-group">
+                    <label for="Age">Age</label>
+                    <input type="number" id="Age" name="Age" required min="18" max="100" value="30">
+                </div>
+
+                <!-- 2. Monthly Income -->
+                <div class="form-group">
+                    <label for="MonthlyIncome">Monthly Income</label>
+                    <input type="number" id="MonthlyIncome" name="MonthlyIncome" required min="1000" value="5000">
+                </div>
+
+                <!-- 3. OverTime -->
+                <div class="form-group">
+                    <label for="OverTime">Over Time</label>
+                    <select id="OverTime" name="OverTime">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+
+                <!-- 4. Total Working Years -->
+                <div class="form-group">
+                    <label for="TotalWorkingYears">Total Working Years</label>
+                    <input type="number" id="TotalWorkingYears" name="TotalWorkingYears" required min="0" value="5">
+                </div>
+
+                <!-- 5. Years At Company -->
+                <div class="form-group">
+                    <label for="YearsAtCompany">Years At Company</label>
+                    <input type="number" id="YearsAtCompany" name="YearsAtCompany" required min="0" value="3">
+                </div>
+
+            </div>
+
+            <button type="submit" id="predictBtn">Predict Attrition</button>
+        </form>
+
+        <div id="result" class="result-container" style="display: none;">
+            <h2>Prediction Result</h2>
+            <p>Will Employee Leave? <span id="predictionText"></span></p>
+            <p>Confidence: <span id="probabilityText"></span>%</p>
+            <p style="font-size: 0.9em; color: #777; margin-top: 10px;">Based on: Age, Income, Overtime, Experience,
+                Tenure.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = {};
+
+            formData.forEach((value, key) => {
+                if (document.getElementById(key).type === 'number') {
+                    data[key] = Number(value);
+                } else {
+                    data[key] = value;
+                }
+            });
+
+            const btn = document.getElementById('predictBtn');
+            btn.disabled = true;
+            btn.textContent = 'Analyzing...';
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+
+                if (result.error) {
+                    alert('Error: ' + result.error);
+                    return;
+                }
+
+                const resultDiv = document.getElementById('result');
+                const predText = document.getElementById('predictionText');
+                const probText = document.getElementById('probabilityText');
+
+                resultDiv.style.display = 'block';
+                predText.textContent = result.prediction;
+                predText.className = result.prediction === 'Yes' ? 'danger' : 'success';
+                probText.textContent = (result.probability * 100).toFixed(2);
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please check the console.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Predict Attrition';
+            }
+        });
+    </script>
+
+</body>
+
+</html>
