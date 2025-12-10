@@ -11,7 +11,7 @@ A Machine Learning powered web application to predict employee attrition. This t
     3.  **Over Time**
     4.  **Total Working Years**
     5.  **Years At Company**
-*   **Web Interface**: User-friendly Flask application to get real-time predictions.
+*   **Web Interface**: User-friendly **Streamlit** application (also includes Flask option).
 *   **Interactive UI**: Clean, modern design with immediate feedback.
 
 ## 📋 Prerequisites
@@ -19,7 +19,7 @@ A Machine Learning powered web application to predict employee attrition. This t
 Ensure you have Python installed. You will need the following libraries:
 
 ```bash
-pip install pandas numpy scikit-learn flask
+pip install pandas numpy scikit-learn flask streamlit
 ```
 
 ## 🛠️ Installation & Usage
@@ -42,7 +42,17 @@ This will:
 -   Train the Random Forest model.
 -   Save `model.pkl` and `model_columns.pkl`.
 
-### 2. Running the Web Application
+### 2. Running the Application
+
+#### Option A: Streamlit (Recommended)
+This provides a modern, interactive dashboard.
+
+```bash
+streamlit run streamlit_app.py
+```
+This will automatically open the app in your browser (usually at `http://localhost:8501`).
+
+#### Option B: Flask (Legacy)
 Start the Flask server:
 
 ```bash
